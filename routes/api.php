@@ -24,8 +24,10 @@ Route::controller(AuthController::class)->group(function(){
 
 //User
 Route::middleware('auth.api')->group(function(){
-    Route::controller(UserController::class)->group(function(){
-        Route::post('users', 'index');
-        Route::post('user/:id', 'show');
-    });
+    // Route::controller(UserController::class)->group(function(){
+    //     Route::get('users', 'index');
+    //     Route::get('users/{id}', 'show');
+    // });
+
+    Route::apiResource('users' , UserController::class);
 });

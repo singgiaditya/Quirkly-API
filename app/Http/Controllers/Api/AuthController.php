@@ -50,7 +50,7 @@ class AuthController extends Controller
                 'data' => $user
             ];
 
-            return response()->json($response, 200);
+            return response()->json($response, 201);
         } catch (\Throwable $th) {
             $response = [
                 'message' => 'Something Went Wrong',
