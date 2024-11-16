@@ -14,8 +14,8 @@ class Companies extends Model
 
     protected $fillable = [
         'name',
+        'image',
         'description',
-        'password',
         'created_by',
     ];
 
@@ -35,8 +35,5 @@ class Companies extends Model
         return $this->hasOne(User::class);
     }
 
-    public function user_point(): BelongsTo {
-        return $this->belongsTo(User_Points::class);
-    }
 
 }

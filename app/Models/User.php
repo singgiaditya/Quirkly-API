@@ -46,9 +46,9 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function user_companies(): BelongsTo
+    public function user_companies(): HasMany
     {
-        return $this->belongsTo(Companies::class);
+        return $this->HasMany(User_Companies::class);
     }
 
     public function user_teams(): BelongsTo
@@ -56,10 +56,6 @@ class User extends Authenticatable
         return $this->belongsTo(User_Teams::class);
     }
 
-    public function user_point(): BelongsTo
-    {
-        return $this->belongsTo(User_Points::class);
-    }
     
     public function task(): BelongsTo
     {

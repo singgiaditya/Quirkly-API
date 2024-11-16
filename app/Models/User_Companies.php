@@ -12,6 +12,10 @@ class User_Companies extends Model
 {
     use HasFactory;
 
+    protected $table = 'user_companies';
+
+    public $timestamps = false;
+
     protected $fillable = [
         'user_id',
         'company_id',

@@ -29,4 +29,8 @@ class Task extends Model
     public function assign_to() : HasOne{
         return $this->hasOne(User::class);
     }
+
+    public function  comments(): HasMany{
+        return $this->hasMany(comment::class);
+    }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\api\CompaniesController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,4 +31,5 @@ Route::middleware('auth.api')->group(function(){
     // });
 
     Route::apiResource('users' , UserController::class);
+    Route::apiResource('companies' , CompaniesController::class);
 });
