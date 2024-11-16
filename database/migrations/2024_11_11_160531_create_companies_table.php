@@ -15,8 +15,9 @@ return new class extends Migration
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('image')->nullable();
             $table->text('description');
-            $table->foreignIdFor(User::class, 'user_id');
+            $table->foreignIdFor(User::class, 'created_by')->references('id')->on('users')->cascadeOnDelete();
             $table->timestamps();
         });
     }

@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Team;
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_teams', function (Blueprint $table) {
+        Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class, 'user_id')->references( 'id')->on('users')->cascadeOnDelete();
-            $table->foreignIdFor(Team::class, 'team_id')->references('id')->on('teams')->cascadeOnDelete();
-            $table->string('role');
+            $table->foreignIdFor(Task::class, 'task_id')->references( 'id')->on('tasks')->cascadeOnDelete();
+            $table->foreignIdFor(User::class, 'user_id')->references('id')->on('users')->cascadeOnDelete();
+            $table->text('comment');
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_teams');
+        Schema::dropIfExists('comments');
     }
 };

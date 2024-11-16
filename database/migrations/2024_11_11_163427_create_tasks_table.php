@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Project::class, 'project_id');
+            $table->foreignIdFor(Project::class, 'project_id')->references('id')->on('projects')->cascadeOnDelete();
             $table->string('title');
             $table->string('description');
             $table->enum('priority', ['low', 'medium', 'high']);
