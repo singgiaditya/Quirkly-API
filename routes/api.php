@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\api\CompaniesController;
 use App\Http\Controllers\api\TeamsController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\api\UserTeamsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -34,4 +35,5 @@ Route::middleware('auth.api')->group(function(){
     Route::apiResource('users' , UserController::class);
     Route::apiResource('companies' , CompaniesController::class);
     Route::apiResource('teams' , TeamsController::class);
+    Route::apiResource('user-team' , UserTeamsController::class);
 });

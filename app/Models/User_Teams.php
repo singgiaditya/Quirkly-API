@@ -12,12 +12,12 @@ class User_Teams extends Model
 {
     use HasFactory;
 
+    protected $table = 'user_teams';
+
     protected $fillable = [
         'user_id',
         'team_id',
-        'password',
         'role',
-        'joined_at',
     ];
 
     public function user(): BelongsTo
@@ -25,9 +25,9 @@ class User_Teams extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function teams(): HasMany
+    public function teams(): hasOne
     {
-        return $this->hasMany(Team::class);
+        return $this->hasOne(Team::class, 'id');
     }
 
 }

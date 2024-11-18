@@ -51,9 +51,9 @@ class User extends Authenticatable
         return $this->HasMany(User_Companies::class);
     }
 
-    public function user_teams(): BelongsTo
+    public function user_teams(): HasMany
     {
-        return $this->belongsTo(User_Teams::class);
+        return $this->hasMany(User_Teams::class);
     }
 
     
