@@ -20,8 +20,7 @@ return new class extends Migration
             $table->string('description');
             $table->enum('priority', ['low', 'medium', 'high']);
             $table->enum('status', ['pending', 'in_progress', 'completed']);
-            $table->integer('points_awarded');
-            $table->dateTime('due_data');
+            $table->dateTime('due_date');
             $table->foreignIdFor(User::class, 'assign_to');
             $table->timestamps();
         });

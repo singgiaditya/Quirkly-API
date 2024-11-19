@@ -3,15 +3,13 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\CompaniesResource;
-use App\Models\Companies;
+use App\Http\Resources\UserCompaniesResource;
 use App\Models\User_Companies;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Validator;
 
-class CompaniesController extends Controller
+class UserCompaniesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,10 +17,9 @@ class CompaniesController extends Controller
     public function index()
     {
         try {
-            $companies = Companies::latest()->paginate(5);
-            return new CompaniesResource(true, 'List Company', $companies);
+            $user_companies = User_Companies::latest()->paginate(5);
+            return new UserCompaniesResource(true, 'List Company', $user_companies);
         } catch (\Throwable $th) {
-
             $response = [
                 'message' => 'Something Went Wrong',
                 'error' => $th
@@ -32,8 +29,6 @@ class CompaniesController extends Controller
         }
     }
 
-
-
     /**
      * Store a newly created resource in storage.
      */
@@ -41,8 +36,9 @@ class CompaniesController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:255',
-                'description' => 'required|string',
+                'user_id' => 'required|int',
+                'company_id' => 'required|int',
+                'role' => 'required|string',
             ]);
 
             if ($validator->fails()) {
@@ -54,26 +50,22 @@ class CompaniesController extends Controller
                 return response()->json($response, 400);
             }
 
-            $userId = auth('sanctum')->user()->id;
+            $isValid = $this->check_company_user($request->company_id);
 
-            $companies = Companies::create(
-                [
-                    "name" => $request->name,
-                    "description" => $request->description,
-                    "created_by" => $userId,
-                ]
-            );
+            if (!$isValid) {
+                return response()->json(['message' => 'You Dont Have Access To Do It'], 403);
+            }
 
-            User_Companies::create(
+            $user_companies =  User_Companies::create(
                 [
-                    'user_id' => $userId,
-                    'company_id' => $companies->id,
-                    'role' => 'King',
+                    'user_id' => $request->user_id,
+                    'company_id' => $request->company_id,
+                    'role' => $request->role,
                     'joined_at' => Carbon::now(),
                 ]
             );
 
-            return new CompaniesResource(true, 'Company Created Successfully', $companies);
+            return new UserCompaniesResource(true, 'Company Created Successfully', $user_companies);
 
         } catch (\Throwable $th) {
             $response = [
@@ -83,7 +75,6 @@ class CompaniesController extends Controller
 
             return response()->json($response, 500);
         }
-
     }
 
     /**
@@ -92,16 +83,14 @@ class CompaniesController extends Controller
     public function show(string $id)
     {
         try {
-            $company = Companies::find($id);
+            $user_companies = User_Companies::find($id);
 
-            if (!$company) {
-                return response()->json(['message' => 'Company not found'], 404);
+            if (!$user_companies) {
+                return response()->json(['message' => 'User Company Not Found'], 404);
             }
 
-            return new CompaniesResource(true, 'Detail Company', $company);
-
+            return new UserCompaniesResource(true, 'Detail User Team', $user_companies);
         } catch (\Throwable $th) {
-
             $response = [
                 'message' => 'Something Went Wrong',
                 'error' => $th
@@ -117,8 +106,7 @@ class CompaniesController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'string|max:255',
-            'description' => 'string',
+            'role' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -133,25 +121,24 @@ class CompaniesController extends Controller
 
         try {
 
-            $company = Companies::find($id);
+            $user_companies = User_Companies::find($id);
 
-            if (!$company) {
-                return response()->json(['message' => 'Company not found'], 404);
+            if (!$user_companies) {
+                return response()->json(['message' => 'User Companies not found'], 404);
             }
 
-            $isValid = $this->check_company_user($id);
+            $isValid = $this->check_company_user($user_companies->company_id);
 
             if (!$isValid) {
                 return response()->json(['message' => 'You Dont Have Access To Do It'], 403);
             }
 
-            $company->update(
+            $user_companies->update(
                 [
-                    'name' => $request->name ?? $company['name'],
-                    'description' => $request->description ?? $company['description'],
+                    'role' => $request->role
                 ]
             );
-            return new CompaniesResource(true, 'Success Update Company!', $company);
+            return new UserCompaniesResource(true, 'Success Update Company!', $user_companies);
 
 
         } catch (\Throwable $th) {
@@ -165,7 +152,6 @@ class CompaniesController extends Controller
         }
     }
 
-
     /**
      * Remove the specified resource from storage.
      */
@@ -173,10 +159,10 @@ class CompaniesController extends Controller
     {
         try {
 
-            $company = Companies::find($id);
+            $user_companies = User_Companies::find($id);
 
-            if (!$company) {
-                return response()->json(['message' => 'Company not found'], 404);
+            if (!$user_companies) {
+                return response()->json(['message' => 'User Companies not found'], 404);
             }
 
             $isValid = $this->check_company_user($id);
@@ -186,8 +172,8 @@ class CompaniesController extends Controller
             }
 
 
-            $company->delete();
-            return new CompaniesResource(true, 'Success Delete Company!', $company);
+            $user_companies->delete();
+            return new UserCompaniesResource(true, 'Success Delete User Companies!', $user_companies);
 
         } catch (\Throwable $th) {
 
@@ -213,5 +199,4 @@ class CompaniesController extends Controller
         return true;
     }
 
-    
 }
