@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserTeamResource;
 use App\Models\Team;
+use App\Models\User;
 use App\Models\User_Teams;
 use Illuminate\Http\Request;
 use Validator;
@@ -38,7 +39,7 @@ class UserTeamsController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'user_id' => 'required|int',
+                'email' => 'required|email',
                 'team_id' => 'required|int',
                 'role' => 'required|string',
             ]);
@@ -50,6 +51,12 @@ class UserTeamsController extends Controller
                     'error' => $errors
                 ];
                 return response()->json($response, 400);
+            }
+
+            $user = User::where("email", "=", $request->email)->first();
+
+            if(!$user){
+                return response()->json(['message' => 'User Not Found'], 404);
             }
 
             $team = Team::find($request->team_id);
@@ -66,7 +73,7 @@ class UserTeamsController extends Controller
 
             $user_team = User_Teams::create(
                 [
-                    "user_id" => $request->user_id,
+                    "user_id" => $user->id,
                     "team_id" => $request->team_id,
                     "role" => $request->role
                 ]

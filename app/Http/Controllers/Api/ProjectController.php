@@ -94,7 +94,7 @@ class ProjectController extends Controller
     public function show(string $id)
     {
         try {
-            $project = Project::find($id);
+            $project = Project::where('team_id', '=', $id);
 
             if (!$project) {
                 return response()->json(['message' => 'Project not found'], 404);

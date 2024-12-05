@@ -32,7 +32,7 @@ class Companies extends Model
 
     public function createdBy(): HasOne
     {
-        return $this->hasOne(User::class);
+        return $this->hasOne(User::class, 'id', 'created_by');
     }
 
 

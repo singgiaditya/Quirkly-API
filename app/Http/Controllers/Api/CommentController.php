@@ -75,7 +75,7 @@ class CommentController extends Controller
     public function show(string $id)
     {
         try {
-            $comment = Comment::find($id);
+            $comment = Comment::where("task_id", '=', $id);
 
             if (!$comment) {
                 return response()->json(['message' => 'Comment not found'], 404);

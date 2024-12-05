@@ -99,7 +99,7 @@ class TaskController extends Controller
     public function show(string $id)
     {
         try {
-            $task = Task::find($id);
+            $task = Task::where("project_id", '=', $id);
 
             if (!$task) {
                 return response()->json(['message' => 'Task not found'], 404);

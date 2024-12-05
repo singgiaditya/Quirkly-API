@@ -19,8 +19,14 @@ class CompaniesController extends Controller
     public function index()
     {
         try {
-            $companies = Companies::latest()->paginate(5);
-            return new CompaniesResource(true, 'List Company', $companies);
+            // $companies = Companies::with('createdBy')->latest()->paginate(5);
+            $user = auth('sanctum')->user();
+            $user_companies = User_Companies::where('user_id', '=', $user->id)->with('company')->get();
+            $company = [];
+            foreach ($user_companies as $value) {
+                $company[]= $value->company->with('createdBy')->first();
+            }
+            return new CompaniesResource(true, 'List Company', $company);
         } catch (\Throwable $th) {
 
             $response = [
@@ -43,6 +49,7 @@ class CompaniesController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'description' => 'required|string',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
             if ($validator->fails()) {
@@ -56,11 +63,19 @@ class CompaniesController extends Controller
 
             $userId = auth('sanctum')->user()->id;
 
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('public/images');
+                $imagePath = basename($imagePath); // Simpan hanya nama file
+            }
+
+
             $companies = Companies::create(
                 [
                     "name" => $request->name,
                     "description" => $request->description,
                     "created_by" => $userId,
+                    "image" => $imagePath
                 ]
             );
 
@@ -213,5 +228,5 @@ class CompaniesController extends Controller
         return true;
     }
 
-    
+
 }

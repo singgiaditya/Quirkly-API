@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\TeamResource;
 use App\Models\Companies;
 use App\Models\Team;
+use App\Models\User_Teams;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -17,8 +18,9 @@ class TeamsController extends Controller
     public function index()
     {
         try {
-            $teams = Team::latest()->paginate(5);
-            return new TeamResource(true, 'List Teams', $teams);
+            $user = auth('sanctum')->user();
+            $user_teams = User_Teams::where('user_id', '=', $user->id)->with('teams')->get();
+            return new TeamResource(true, 'List Teams', $user_teams);
         } catch (\Throwable $th) {
 
             $response = [
@@ -40,6 +42,7 @@ class TeamsController extends Controller
             'company_id' => 'required|int',
             'name' => 'required|string',
             'description' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -64,11 +67,18 @@ class TeamsController extends Controller
                 return response()->json(['message' => 'You Dont Have Access To Do It'], 403);
             }
 
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('public/images');
+                $imagePath = basename($imagePath); // Simpan hanya nama file
+            }
+
             $team = Team::create(
                 [
                     'company_id' => $request->company_id,
                     'name' => $request->name,
-                    'description' => $request->description
+                    'description' => $request->description,
+                    'image' => $imagePath
                 ]
             );
 

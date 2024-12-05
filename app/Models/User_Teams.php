@@ -27,7 +27,7 @@ class User_Teams extends Model
 
     public function teams(): hasOne
     {
-        return $this->hasOne(Team::class, 'id');
+        return $this->hasOne(Team::class, 'id', "team_id" );
     }
 
 }

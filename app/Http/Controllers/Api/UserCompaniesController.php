@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserCompaniesResource;
+use App\Models\User;
 use App\Models\User_Companies;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -36,7 +37,7 @@ class UserCompaniesController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'user_id' => 'required|int',
+                'email' => 'required|email',
                 'company_id' => 'required|int',
                 'role' => 'required|string',
             ]);
@@ -56,9 +57,15 @@ class UserCompaniesController extends Controller
                 return response()->json(['message' => 'You Dont Have Access To Do It'], 403);
             }
 
+            $user = User::where("email", "=", $request->email)->first();
+
+            if(!$user){
+                return response()->json(['message' => 'User Not Found'], 404);
+            }
+
             $user_companies =  User_Companies::create(
                 [
-                    'user_id' => $request->user_id,
+                    'user_id' => $user->id,
                     'company_id' => $request->company_id,
                     'role' => $request->role,
                     'joined_at' => Carbon::now(),

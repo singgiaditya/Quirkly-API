@@ -27,7 +27,7 @@ class User_Companies extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function company(): HasMany {
-        return $this->hasMany(Companies::class);
+    public function company(): HasOne {
+        return $this->hasOne(Companies::class, 'id', 'company_id');
     }
 }
